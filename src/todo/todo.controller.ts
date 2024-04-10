@@ -45,6 +45,6 @@ export class TodoController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.todoService.remove(+id);
+    return this.todoService.remove(id);
   }
 }

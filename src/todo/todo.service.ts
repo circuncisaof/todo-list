@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -14,7 +14,6 @@ export class TodoService {
 
   async create(createTodoDto: CreateTodoDto): Promise<CreateTodoDto> {
     const created = await this.todoRepositor.save(createTodoDto);
-    console.log(created);
     return created;
   }
 
@@ -28,12 +27,19 @@ export class TodoService {
   }
 
   async update(id: string, updateTodoDto: UpdateTodoDto) {
-    const updat_todo = await this.todoRepositor.findOneBy({ id });
-    
-    return;
+    const updat_id = await this.todoRepositor.findOneBy({ id });
+    if (!updat_id) {
+      throw new NotFoundException();
+    }
+    Object.assign(updat_id, updateTodoDto);
+    return await this.todoRepositor.save(updat_id);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} todo`;
+  async remove(id: string) {
+    const updat_id = await this.todoRepositor.findOneBy({ id });
+    if (!updat_id) {
+      throw new NotFoundException();
+    }
+    return await this.todoRepositor.remove(updat_id);
   }
 }
