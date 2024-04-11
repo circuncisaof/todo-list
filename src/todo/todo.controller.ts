@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -18,33 +21,57 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   async create(
     @Res() response: Response,
     @Body() createTodoDto: CreateTodoDto,
   ) {
-    const data = await this.todoService.create(createTodoDto);
-    return response.status(201).json(data);
+    try {
+      const data = await this.todoService.create(createTodoDto);
+      const info = response.json({ data });
+      const res = response.status;
+      if (data === null) {
+        throw new Error('Nao pode estar nulo');
+      }
+      return {
+        info,
+        res,
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   @Get()
   async findAll(@Res() response: Response) {
     const alLTodo = await this.todoService.findAll();
-    console.log(alLTodo);
-    return response.status(200).json(alLTodo);
+    return response.status(201).json(alLTodo);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.todoService.findOne(id);
+    try {
+      return this.todoService.findOne(id);
+    } catch (err) {
+      throw new NotFoundException();
+    }
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
-    return this.todoService.update(id, updateTodoDto);
+    try {
+      return this.todoService.update(id, updateTodoDto);
+    } catch (err) {
+      throw new NotFoundException();
+    }
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.todoService.remove(id);
+    try {
+      return this.todoService.remove(id);
+    } catch (err) {
+      throw new NotFoundException();
+    }
   }
 }
