@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TodoModule } from './todo/todo.module';
+import { CronometroModule } from './cronometro/cronometro.module';
 @Module({
   imports: [
     TodoModule,
@@ -19,6 +20,7 @@ import { TodoModule } from './todo/todo.module';
       logging: false,
       entities: [__dirname + '/**/*.entity{.js, .ts}'],
     }),
+    CronometroModule,
   ],
   controllers: [AppController],
   providers: [AppService],
