@@ -4,16 +4,20 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   NotFoundException,
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { FilterTasks } from './dto/filter.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Todo } from './entities/todo.entity';
 import { TodoService } from './todo.service';
 
 @Controller('todo')
@@ -22,24 +26,10 @@ export class TodoController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  async create(
-    @Res() response: Response,
-    @Body() createTodoDto: CreateTodoDto,
-  ) {
-    try {
-      const data = await this.todoService.create(createTodoDto);
-      const info = response.json({ data });
-      const res = response.status;
-      if (data === null) {
-        throw new Error('Nao pode estar nulo');
-      }
-      return {
-        info,
-        res,
-      };
-    } catch (error) {
-      return error;
-    }
+  async create(@Res() res: Response, @Body() createTodoDto: CreateTodoDto) {
+    const data = await this.todoService.create(createTodoDto);
+
+    throw new HttpException(data, HttpStatus.ACCEPTED);
   }
 
   @Get()
@@ -48,13 +38,22 @@ export class TodoController {
     return response.status(201).json(alLTodo);
   }
 
+  @Get('filter')
+  async filter(@Query() filterTasks: FilterTasks): Promise<Todo[]> {
+    console.log(filterTasks);
+    if (Object.keys(filterTasks).length) {
+      return await this.todoService.filter(filterTasks);
+    } else {
+      this.todoService.findAll();
+    }
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    try {
-      return this.todoService.findOne(id);
-    } catch (err) {
-      throw new NotFoundException();
+    if (!id) {
+      throw new NotFoundException('Not found');
     }
+    return this.todoService.findOne(id);
   }
 
   @Patch(':id')

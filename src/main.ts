@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
@@ -6,6 +7,7 @@ async function bootstrap() {
     cors: true,
   });
   app.setGlobalPrefix('api/v1'); // Adds prefix
+  app.useGlobalPipes(new ValidationPipe());
   const options = {
     origin: 'http://localhost:4200',
     allowedHeaders: 'Content-Type, Accept',

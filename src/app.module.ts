@@ -1,28 +1,26 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TodoModule } from './todo/todo.module';
 import { CronometroModule } from './cronometro/cronometro.module';
+import { TodoModule } from './todo/todo.module';
 @Module({
   imports: [
     TodoModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.HOST,
-      port: Number(process.env.PORT),
-      database: process.env.DATABASE,
-      username: process.env.USER,
-      password: process.env.PASSWORD,
+      host: 'localhost',
+      port: 5432,
+      database: 'postgres',
+      username: 'postgres',
+      password: 'mari0001',
       synchronize: true,
       logging: false,
       entities: [__dirname + '/**/*.entity{.js, .ts}'],
     }),
     CronometroModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

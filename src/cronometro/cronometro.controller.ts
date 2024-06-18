@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CronometroService } from './cronometro.service';
 import { CreateCronometroDto } from './dto/create-cronometro.dto';
 import { UpdateCronometroDto } from './dto/update-cronometro.dto';
@@ -23,7 +31,10 @@ export class CronometroController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCronometroDto: UpdateCronometroDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCronometroDto: UpdateCronometroDto,
+  ) {
     return this.cronometroService.update(+id, updateCronometroDto);
   }
 
