@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { FilterTasks } from './dto/filter.dto';
+import { ReturnTodo } from './dto/return/return_todo';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './entities/todo.entity';
 
@@ -12,12 +14,27 @@ export class TodoService {
     private readonly todoRepositor: Repository<Todo>,
   ) {}
 
-  async create(createTodoDto: CreateTodoDto): Promise<CreateTodoDto> {
-    const created = await this.todoRepositor.save(createTodoDto);
-    if (created !== null && created !== undefined) {
-      throw new Error('Nao pode estar nulo');
+  async create(createTodoDto: CreateTodoDto): Promise<ReturnTodo> {
+    const created = await this.todoRepositor.create(createTodoDto);
+    return new ReturnTodo(await this.todoRepositor.save(created));
+  }
+
+  async filter(filterTasks: FilterTasks): Promise<Todo[]> {
+    const { id, todo, checked } = filterTasks;
+    const conditions: FindOptionsWhere<Todo> | FindOptionsWhere<Todo>[] = {
+      ...(id ? { id } : {}),
+      ...(todo ? { todo } : {}),
+      ...(checked ? { checked } : {}),
+    };
+
+    const data_re = await this.todoRepositor.find({
+      where: conditions,
+    });
+    if (!data_re) {
+      return this.findAll();
     }
-    return created;
+
+    return data_re;
   }
 
   async findAll(): Promise<Todo[]> {
