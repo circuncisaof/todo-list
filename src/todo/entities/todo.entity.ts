@@ -14,7 +14,11 @@ export class Todo {
   @Column({ name: 'todo', nullable: false })
   todo: string;
 
-  @Column({ name: 'checked', nullable: true })
+  @Column({
+    name: 'checked',
+    nullable: true,
+    default: false,
+  })
   checked: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
