@@ -29,6 +29,9 @@ export class TodoService {
 
     const data_re = await this.todoRepositor.find({
       where: conditions,
+      order: {
+        createdAt: 'DESC',
+      },
     });
     if (!data_re) {
       return this.findAll();
